@@ -1,0 +1,17 @@
+1. get User details from frontend
+ - username
+ - email
+ - fullname
+ - avatar
+ - coverImage
+ - password
+2. trim the data and validation of all required data
+3. check if the user already exists : username , email
+4. upload the data to local storage : avatar , coverImage
+5. upload the data to cloudinary : avatar , coverImage
+6. create user object - create entry in database
+7. remove password and refresh token field from response
+8. check for user creation
+9. generate bearer token 
+10. generate refresh token
+11. route the user to the website 
