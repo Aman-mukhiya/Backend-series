@@ -24,10 +24,6 @@ const videoSchema = new Schema(
         type: Number, // fromcloudinary url
         required: true,
       },
-      description:{
-        type: Number, // fromcloudinary url
-        default: 0
-      },
       isPublished:{
         type: Boolean,
         default: true
