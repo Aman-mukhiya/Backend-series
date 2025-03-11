@@ -5,6 +5,7 @@ const TweetcommentSchema = new Schema(
     {
          content: {
             type: String,
+            trim:true,
             required: true
          },
          Tweet:{

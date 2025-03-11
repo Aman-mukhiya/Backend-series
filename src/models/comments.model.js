@@ -5,6 +5,7 @@ const commentSchema = new Schema(
     {
          content: {
             type: String,
+            trim: true,
             required: true
          },
          video:{
