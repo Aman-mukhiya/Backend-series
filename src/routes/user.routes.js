@@ -16,6 +16,8 @@ import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
+
+// for uploading the avatar and cover image
 router.route("/register").post(
   upload.fields([
     {
@@ -30,8 +32,26 @@ router.route("/register").post(
   registerUser
 );
 
-router.route("/login").post(loginUser);
 
+// for uploading the video and thumbnail
+
+router.route("/video-upload").post(
+  upload.fields([
+    {
+      name: "videoFile",
+      maxCount: 1,
+    },
+    {
+      name: "thumbnail",
+      maxCount: 1,
+    },
+  ]),
+  publishAVideo
+);
+
+
+// All routes
+router.route("/login").post(loginUser);
 // seecured routes
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refres-token").post(refreshAccessToken);

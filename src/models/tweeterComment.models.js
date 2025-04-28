@@ -21,6 +21,6 @@ const TweetcommentSchema = new Schema(
     }
 )
 
-commentSchema.plugin(mongooseAggregatePaginate);
+TweetcommentSchema.plugin(mongooseAggregatePaginate);
 
 export const TweetComment = mongoose.model("TweetComment", TweetcommentSchema)
