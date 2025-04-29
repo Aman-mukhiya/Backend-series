@@ -32,24 +32,6 @@ router.route("/register").post(
   registerUser
 );
 
-
-// for uploading the video and thumbnail
-
-router.route("/video-upload").post(
-  upload.fields([
-    {
-      name: "videoFile",
-      maxCount: 1,
-    },
-    {
-      name: "thumbnail",
-      maxCount: 1,
-    },
-  ]),
-  publishAVideo
-);
-
-
 // All routes
 router.route("/login").post(loginUser);
 // seecured routes

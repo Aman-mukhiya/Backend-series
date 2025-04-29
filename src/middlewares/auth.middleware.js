@@ -9,26 +9,26 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
       req.cookies?.accessToken ||
       req.header("Authorization")?.replace("Bearer ", "");
 
-      //const  token  = req.cookies?.accessToken?.replace("Bearer ", "");
+      const  tokenValue  = req.cookies?.accessToken?.replace("Bearer ", "");
 
-    console.log("This is the token while receiving " + token);
+    console.log("This is the token while receiving " + tokenValue);
 
-    if (!token) {
+    if (!tokenValue) {
       throw new ApiError(401, "Unauthorized request");
     }
 
-    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKENS_SECRET);
+    const decodedToken = jwt.verify(tokenValue, process.env.ACCESS_TOKENS_SECRET);
     const user = await User.findById(decodedToken?._id).select(
       "-password -refreshToken"
     );
 
     if (!user) {
-      throw new ApiError(401, "Invalid Access Token");
+      throw new ApiError(401, "/n ---------this is INTERNAL---------Invalid Access Token");
     }
 
     req.user = user;
     next();
   } catch (error) {
-    throw new ApiError(401, error?.message || "Invalid access token ");
+    throw new ApiError(401, error?.message || "/n ---------- this is while something went wront Invalid access token ");
   }
 });

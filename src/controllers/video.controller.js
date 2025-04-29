@@ -21,19 +21,21 @@ const publishAVideo = asyncHandler(async (req, res) => {
     
         const { title, description } = req.body;
         const owner = req.user._id;
-        const ThumbnailLocalFilePath = req.files?.thumbnail[0]?.path;
+        const ThumbnailLocalFilePath = req.files?.thumbnail[0]?.path;// changed to Thumbnail from thumbnail
         const videoLocalFilePath = req.files?.videoFile[0]?.path;
         let VideoDuration = "";
+        let UploadedVideoFile = "";
+        let UploadedThumbnail = "";
     
         if (!title || !description) throw new ApiError(400, "Title and description are necessary");
         if (!ThumbnailLocalFilePath) throw new ApiError(400, "Thumbnail is required!");
         if (!videoLocalFilePath) throw new ApiError(400, "Video is required!");
     
         try {
-            const UploadedVideoFile = await uploadOnCloudinary(videoLocalFilePath);
+            let UploadedVideoFile = await uploadOnCloudinary(videoLocalFilePath);
             if (!UploadedVideoFile) throw new ApiError(500, "Unable to upload video to Cloudinary");
     
-            const UploadedThumbnail = await uploadOnCloudinary(ThumbnailLocalFilePath);
+            let UploadedThumbnail = await uploadOnCloudinary(ThumbnailLocalFilePath);
             if (!UploadedThumbnail) throw new ApiError(400, "Unable to upload thumbnail to Cloudinary");
     
             VideoDuration = UploadedVideoFile.duration || 0;
