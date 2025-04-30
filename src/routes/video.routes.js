@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   getAllVideos,
   publishAVideo,
+  getChannelVideos,
   getVideoById,
   updateVideo,
   deleteVideo,
@@ -23,5 +24,7 @@ router
     ]),
     publishAVideo
   );
+ // get videos from the channel
+  router.get("/channel", getChannelVideos);
 
 export default router;
