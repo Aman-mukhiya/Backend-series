@@ -83,7 +83,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
   }
 
   // Fetch videos
-  const userVideos = await Video.find({ owner: objectUserId })
+  const userVideos = await Video.find({ owner: objectUserId, isPublished: true })
     .sort({ [sortBy]: sortType === "asc" ? 1 : -1 }) // <-- sorting applied here
     .skip((page - 1) * limit) // <-- pagination
     .limit(Number(limit));
@@ -149,6 +149,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
     title,
     description,
     duration: VideoDuration,
+    isPublished: true,
     owner,
   });
 
