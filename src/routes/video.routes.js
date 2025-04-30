@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getAllVideos,
+  getSearchVideos,
   publishAVideo,
   getChannelVideos,
   getVideoById,
@@ -26,5 +27,8 @@ router
   );
  // get videos from the channel
   router.get("/channel", getChannelVideos);
+
+   // get search videos from the channel
+   router.get("/search", getSearchVideos);
 
 export default router;
