@@ -7,8 +7,21 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
-  //TODO: get all videos based on query, sort, pagination
+  const { page = 1, limit = 10 } = req.query;
+
+
+  const videos = await Video.aggregate([
+    { $match: { isPublished: true } }, // Only published videos
+    { $sample: { size: parseInt(limit) } },      // Random sample
+  ]);
+
+  if(!videos) {
+    return res
+        .status(404)
+        .json(new ApiResponse(404, videos, "No videos found!"));
+  }
+
+  res.status(200).json(new ApiResponse(201, videos, "Videos retrived randomly"));
 
   // here getting the data based on a specific user i.e. of a channel
   // const user = await User.findById(userId);
@@ -45,14 +58,6 @@ const getSearchVideos = asyncHandler(async (req, res) => {
     sortBy = "createdAt",
     userId = "",
   } = req.query;
-
-  if(!query){
-    console.log("There is no query!");
-  }
-
-  // const objectUserId = new mongoose.Types.ObjectId(userId);
-  // console.log("\n the user object is " + objectUserId + "\n");
-
 
   // this is based on the user input of searching e.g "cats videos"
   let searchCriteria = {};

@@ -31,4 +31,7 @@ router
    // get search videos from the channel
    router.get("/search", getSearchVideos);
 
+   // get all videos from the channel
+   router.get("/home", getAllVideos);
+
 export default router;
