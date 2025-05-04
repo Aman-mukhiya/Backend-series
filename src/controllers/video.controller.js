@@ -146,9 +146,11 @@ const publishAVideo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
   const owner = req.user._id;
   const ThumbnailLocalFilePath = req.files?.thumbnail[0]?.path; // changed to Thumbnail from thumbnail
-  //   console.log("/n Thumbnail File is -> " + ThumbnailLocalFilePath + " <- /n");
+    console.log("/n Thumbnail File is -> " + ThumbnailLocalFilePath + " <- /n");
   const videoLocalFilePath = req.files?.videoFile[0]?.path;
-  //   console.log("/n Video File is -> " + videoLocalFilePath + " <- /n");
+    console.log("/n Video File is -> " + videoLocalFilePath + " <- /n");
+
+
 
   let VideoDuration = "";
   let UploadedVideoFile = "";
@@ -193,14 +195,73 @@ const publishAVideo = asyncHandler(async (req, res) => {
 const getVideoById = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   //TODO: get video by id
-  // check if the user i authoriaed to access
-  // check if it is a video object
-  // return the video url
+  const objectVideoId = new mongoose.Types.ObjectId(videoId);
+
+  if(!objectVideoId){
+    return res.status(400).json(new ApiResponse(400, objectVideoId, "Invalid Video id"));
+  }
+
+  const video = await Video.findById(objectVideoId);
+
+  if(!video){
+    return res.status(404).json(new ApiResponse(404, video, "No Video found!"));
+  }
+
+  return res
+            .statu(200)
+            .json(new ApiResponse(201, video, "Found Video by ID"));
+
 });
 
 const updateVideo = asyncHandler(async (req, res) => {
-  const { videoId } = req.params;
+  
   //TODO: update video details like title, description, thumbnail
+
+  const { videoId } = req.params;
+  const {title , description} = req.body;
+  const ThumbnailLocalFilePath = req.files?.thumbnail[0]?.path;
+
+  if(!title || !description || !ThumbnailLocalFilePath){
+    return res
+              .status(400)
+              .json(new ApiResponse(401,null, "Title or Description or Thumbnail needed!"))
+  }
+
+  // Prepare an object to hold the fields to be updated
+  const updateFields = {};
+
+  // Add title and description if provided
+  if (title) updateFields.title = title;
+  if (description) updateFields.description = description;
+
+  if(ThumbnailLocalFilePath){
+    UploadedThumbnail = await uploadOnCloudinary(ThumbnailLocalFilePath);
+    if (!UploadedThumbnail){
+      throw new ApiError(400, "Unable to upload thumbnail to Cloudinary");
+    }
+    updateFields.thumbnail = UploadedThumbnail.url;
+  }
+  
+      
+
+  const objectVideoId = new mongoose.Types.ObjectId(videoId);
+
+
+  const video = await Video.findByIdAndUpdate(
+    objectVideoId,
+    { $set: updateFields },
+    { new: true }
+  )
+
+  if (!video) {
+    return res.status(404).json(new ApiResponse(404, null, "Video not found"));
+  }
+  
+  return res
+    .status(200)
+    .json(new ApiResponse(200, video, "Video updated successfully"));
+
+
 });
 
 const deleteVideo = asyncHandler(async (req, res) => {
