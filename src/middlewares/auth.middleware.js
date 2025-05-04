@@ -13,7 +13,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
 
       // const  tokenValue  = req.header("Authorization")?.replace("Bearer ", "");
 
-    // console.log("This is the token while receiving " + tokenValue?.replace("Bearer ", ""));
+    console.log("This is the token while receiving " + tokenValue?.replace("Bearer ", ""));
 
     if (!tokenValue) {
       throw new ApiError(401, "Unauthorized request");
@@ -25,10 +25,12 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
     );
 
     if (!user) {
-      throw new ApiError(401, "/n ---------this is INTERNAL---------Invalid Access Token");
+      console.log("Not a user! \n");
+      throw new ApiError(401, "/n ---------this is INTERNAL---------Invalid Access Token"); 
     }
 
     req.user = user;
+    console.log("User identified")
     next();
   } catch (error) {
     throw new ApiError(401, error?.message || "/n ---------- this is while something went wront Invalid access token ");

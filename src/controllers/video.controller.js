@@ -197,6 +197,8 @@ const getVideoById = asyncHandler(async (req, res) => {
   //TODO: get video by id
   const objectVideoId = new mongoose.Types.ObjectId(videoId);
 
+  console.log(`This is VideoID : ${videoId} \n`);
+
   if(!objectVideoId){
     return res.status(400).json(new ApiResponse(400, objectVideoId, "Invalid Video id"));
   }
@@ -204,11 +206,12 @@ const getVideoById = asyncHandler(async (req, res) => {
   const video = await Video.findById(objectVideoId);
 
   if(!video){
+    console.log("No videos found! \n");
     return res.status(404).json(new ApiResponse(404, video, "No Video found!"));
   }
 
   return res
-            .statu(200)
+            .status(200)
             .json(new ApiResponse(201, video, "Found Video by ID"));
 
 });
@@ -219,9 +222,18 @@ const updateVideo = asyncHandler(async (req, res) => {
 
   const { videoId } = req.params;
   const {title , description} = req.body;
-  const ThumbnailLocalFilePath = req.files?.thumbnail[0]?.path;
+  const ThumbnailLocalFilePath = req.files?.thumbnail?.[0]?.path;
 
-  if(!title || !description || !ThumbnailLocalFilePath){
+  if(!videoId){
+    return res.status(400).json(new ApiError(403,"No Video Id received"));
+  }
+
+  // console.log(`the VideoID is ${videoId} \n`)
+  // console.log(`the Title is ${title} \n`)
+  // console.log(`the description is ${description} \n`)
+  // console.log(`the thumbnail is ${ThumbnailLocalFilePath} \n`)
+
+  if (!title && !description && !ThumbnailLocalFilePath){
     return res
               .status(400)
               .json(new ApiResponse(401,null, "Title or Description or Thumbnail needed!"))
@@ -242,10 +254,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     updateFields.thumbnail = UploadedThumbnail.url;
   }
   
-      
-
   const objectVideoId = new mongoose.Types.ObjectId(videoId);
-
 
   const video = await Video.findByIdAndUpdate(
     objectVideoId,
@@ -258,9 +267,8 @@ const updateVideo = asyncHandler(async (req, res) => {
   }
   
   return res
-    .status(200)
-    .json(new ApiResponse(200, video, "Video updated successfully"));
-
+            .status(200)
+            .json(new ApiResponse(200, video, "Video updated successfully"));
 
 });
 

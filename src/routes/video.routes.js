@@ -35,7 +35,8 @@ router
    router.get("/home", getAllVideos);
 
    // update the current videos with title, description, thumbnail;
-   router.route("/updateVideo").post(
+   router.patch(
+    "/updateVideo/:videoId",
     upload.fields([
       { name: "thumbnail", maxCount: 1 },
     ]),
