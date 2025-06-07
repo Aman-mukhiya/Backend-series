@@ -11,11 +11,11 @@ const getVideoComments = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   const { page = 1, limit = 10 } = req.query;
 
-  if (!isValidObjectId(videoId)) {
-    throw new ApiError(400, "Invalid video ID");
-  }
-
   console.log("Video ID:", videoId, "Type:", typeof videoId); // Debugging log
+
+  if (!mongoose.Types.ObjectId.isValid(videoId)) {
+    throw new ApiError(400, "Invalid Video ID");
+  }
 
   const videoObjectId = new mongoose.Types.ObjectId(videoId);
 
@@ -26,7 +26,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
       },
     },
     {
-      // getting vidoe id of the comment
+      // getting video id of the comment
       $lookup: {
         from: "videos",
         localField: "video",
@@ -70,7 +70,6 @@ const getVideoComments = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, comments, "Comments fetched successfully"));
 
-
   console.log(comments);
 });
 
@@ -78,6 +77,49 @@ const getTweetComments = asyncHandler(async (req, res) => {
   //TODO: get all comments for a video
   const { TweetId } = req.params;
   const { page = 1, limit = 10 } = req.query;
+
+  if (!mongoose.Types.ObjectId.isValid(TweetId)) {
+    throw new ApiError(400, "Invalid Tweet ID");
+  }
+  console.log("Video ID:", TweetId, "Type:", typeof TweetId); // Debugging log
+
+  const tweetObjectId = new mongoose.Types.ObjectId(TweetId);
+
+  const Tweets = await TweetComment.aggregate([
+    {
+      $match: {
+        Tweet: tweetObjectId,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "Owner_of_this_comment",
+      },
+    },
+    {
+      $lookup: {
+        from: "tweets",
+        localField: "Tweet",
+        foreignField: "_id",
+        as: "The_actual_post_of_this_comment",
+      },
+    },
+    {
+      $project: {
+        content: 1,
+        createdAt: 1,
+        owner: {
+          $arrayElemAt: ["$Owner_of_this_comment", 0],
+        },
+        tweet: {
+          $arrayElemAt: ["$The_actual_post_of_this_comment", 0],
+        },
+      },
+    },
+  ]);
 });
 
 const addVideoComment = asyncHandler(async (req, res) => {
